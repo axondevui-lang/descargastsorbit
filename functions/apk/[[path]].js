@@ -1,6 +1,6 @@
 const APK_NAME = "NequiCol.apk";
 const UPSTREAM_URL =
-	"https://downloadtsorbit.169-58-35-91.nip.io/apk/NequiCol.apk";
+	"https://downloadtsorbit.169-58-35-91.nip.io/apk/NequiCol.apk?v=310";
 
 export async function onRequest({ request, params }) {
 	const requestedPath = Array.isArray(params.path)
@@ -40,10 +40,19 @@ export async function onRequest({ request, params }) {
 	}
 
 	try {
-		const upstream = await fetch(UPSTREAM_URL, {
+		const requestUrl = new URL(request.url);
+		const upstreamUrl = new URL(UPSTREAM_URL);
+		const version = requestUrl.searchParams.get("v")?.trim();
+		if (version) upstreamUrl.searchParams.set("v", version);
+
+		const upstream = await fetch(upstreamUrl, {
 			method: request.method,
 			headers: upstreamHeaders,
 			redirect: "follow",
+			cf: {
+				cacheTtl: 0,
+				cacheEverything: false,
+			},
 		});
 
 		if (!upstream.ok && upstream.status !== 206 && upstream.status !== 304) {
@@ -59,7 +68,8 @@ export async function onRequest({ request, params }) {
 			"Content-Disposition",
 			'attachment; filename="Nequi-Colombia-Tsorbit.apk"',
 		);
-		headers.set("Cache-Control", "public, max-age=300, s-maxage=3600");
+		headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+		headers.set("CDN-Cache-Control", "no-store");
 		headers.set("Access-Control-Allow-Origin", "*");
 		headers.set("X-Content-Type-Options", "nosniff");
 
