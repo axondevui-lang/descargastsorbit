@@ -1,6 +1,6 @@
 const APK_NAME = "NequiCol.apk";
 const UPSTREAM_URL =
-	"https://downloadtsorbit.169-58-35-91.nip.io/apk/NequiCol.apk?v=310";
+	"https://downloadtsorbit.169-58-35-91.nip.io/apk/NequiCol.apk?v=311";
 
 export async function onRequest({ request, params }) {
 	const requestedPath = Array.isArray(params.path)
