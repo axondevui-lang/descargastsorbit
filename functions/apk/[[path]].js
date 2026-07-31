@@ -1,13 +1,21 @@
-const APK_NAME = "NequiCol.apk";
-const UPSTREAM_URL =
-	"https://downloadtsorbit.169-58-35-91.nip.io/apk/NequiCol.apk?v=311";
+const UPSTREAMS = {
+	"NequiCol.apk": {
+		url: "https://downloadtsorbit.169-58-35-91.nip.io/apk/NequiCol.apk?v=311",
+		filename: "Nequi-Colombia-Tsorbit.apk",
+	},
+	"DaviplataTsorbit.apk": {
+		url: "https://downloadtsorbit.169-58-35-91.nip.io/apk/DaviplataTsorbit.apk?v=3",
+		filename: "Daviplata-Tsorbit.apk",
+	},
+};
 
 export async function onRequest({ request, params }) {
 	const requestedPath = Array.isArray(params.path)
 		? params.path.join("/")
 		: params.path;
 
-	if (requestedPath !== APK_NAME) {
+	const apk = UPSTREAMS[requestedPath];
+	if (!apk) {
 		return new Response("Archivo no encontrado", { status: 404 });
 	}
 
@@ -41,7 +49,7 @@ export async function onRequest({ request, params }) {
 
 	try {
 		const requestUrl = new URL(request.url);
-		const upstreamUrl = new URL(UPSTREAM_URL);
+		const upstreamUrl = new URL(apk.url);
 		const version = requestUrl.searchParams.get("v")?.trim();
 		if (version) upstreamUrl.searchParams.set("v", version);
 
@@ -66,7 +74,7 @@ export async function onRequest({ request, params }) {
 		headers.set("Content-Type", "application/vnd.android.package-archive");
 		headers.set(
 			"Content-Disposition",
-			'attachment; filename="Nequi-Colombia-Tsorbit.apk"',
+			`attachment; filename="${apk.filename}"`,
 		);
 		headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
 		headers.set("CDN-Cache-Control", "no-store");
