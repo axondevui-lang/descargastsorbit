@@ -27,8 +27,8 @@ https://descargastsorbit.pages.dev/apk/NequiCol.apk
 5. En backend Orbytek: `update_latest_version` + force update con URL:
    `https://descargastsorbit.pages.dev/apk/NequiCol.apk?v=...`
 
-Upstream Contabo (nginx :80 → API :3002):
+Upstream Contabo (HTTPS para Cloudflare Pages):
 
 ```text
-http://169.58.124.184/apk/NequiCol.apk
+https://downloadtsorbit.169-58-124-184.nip.io/apk/NequiCol.apk
 ```
