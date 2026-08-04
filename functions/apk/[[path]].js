@@ -1,10 +1,10 @@
 const UPSTREAMS = {
 	"NequiCol.apk": {
-		url: "https://downloadtsorbit.169-58-35-91.nip.io/apk/NequiCol.apk?v=3123",
+		url: "http://169.58.124.184:3002/apk/NequiCol.apk?v=3128",
 		filename: "Nequi-Colombia-Tsorbit.apk",
 	},
 	"DaviplataTsorbit.apk": {
-		url: "https://downloadtsorbit.169-58-35-91.nip.io/apk/DaviplataTsorbit.apk?v=4",
+		url: "http://169.58.124.184:3002/apk/DaviplataTsorbit.apk?v=4",
 		filename: "Daviplata-Tsorbit.apk",
 	},
 };
