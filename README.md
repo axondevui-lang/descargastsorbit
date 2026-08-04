@@ -1,7 +1,9 @@
 # Descargas Tsorbit
 
-Proxy de descargas para mantener el dominio de Cloudflare Pages visible mientras
-la APK se almacena en Contabo.
+**Repo oficial de actualizaciones Nequi (APK).**  
+Cloudflare Pages: `https://descargastsorbit.pages.dev/apk/NequiCol.apk`
+
+Proxy de descargas: el usuario ve el dominio Pages; el edge descarga desde Contabo.
 
 ## Cloudflare Pages
 
@@ -13,8 +15,20 @@ la APK se almacena en Contabo.
 Ruta pública:
 
 ```text
-https://<proyecto>.pages.dev/apk/NequiCol.apk
+https://descargastsorbit.pages.dev/apk/NequiCol.apk
 ```
 
-La Function transmite la APK desde Contabo, conserva solicitudes `Range` para
-reanudar descargas y no redirige el navegador al dominio del servidor.
+## Flujo al publicar update Nequi
+
+1. Compilar APK (`npm run apk:build` + `apk:copy`).
+2. Subir a Contabo: `/opt/bots/nequi-orbytek/apk/NequiCol.apk`.
+3. En este repo, bump `?v=` en `functions/apk/[[path]].js` (NequiCol).
+4. Push a `main` → Pages redeploy.
+5. En backend Orbytek: `update_latest_version` + force update con URL:
+   `https://descargastsorbit.pages.dev/apk/NequiCol.apk?v=...`
+
+Upstream Contabo (nginx :80 → API :3002):
+
+```text
+http://169.58.124.184/apk/NequiCol.apk
+```
