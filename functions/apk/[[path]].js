@@ -53,8 +53,14 @@ export async function onRequest({ request, params }) {
 		const version = requestUrl.searchParams.get("v")?.trim();
 		if (version) upstreamUrl.searchParams.set("v", version);
 
+		// Siempre GET al origen (HEAD del edge a veces falla / CF 502).
+		const isHead = request.method === "HEAD";
+		if (isHead) {
+			upstreamHeaders.delete("Range");
+		}
+
 		const upstream = await fetch(upstreamUrl, {
-			method: request.method,
+			method: "GET",
 			headers: upstreamHeaders,
 			redirect: "follow",
 			cf: {
@@ -81,8 +87,8 @@ export async function onRequest({ request, params }) {
 		headers.set("Access-Control-Allow-Origin", "*");
 		headers.set("X-Content-Type-Options", "nosniff");
 
-		return new Response(request.method === "HEAD" ? null : upstream.body, {
-			status: upstream.status,
+		return new Response(isHead ? null : upstream.body, {
+			status: isHead ? 200 : upstream.status,
 			statusText: upstream.statusText,
 			headers,
 		});
