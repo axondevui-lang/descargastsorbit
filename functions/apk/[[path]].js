@@ -64,8 +64,8 @@ export async function onRequest({ request, params }) {
 			headers: upstreamHeaders,
 			redirect: "follow",
 			cf: {
-				cacheTtl: 86400,
-				cacheEverything: true,
+				cacheTtl: 0,
+				cacheEverything: false,
 			},
 		});
 
@@ -82,8 +82,8 @@ export async function onRequest({ request, params }) {
 			"Content-Disposition",
 			`attachment; filename="${apk.filename}"`,
 		);
-		headers.set("Cache-Control", "public, max-age=3600");
-		headers.set("CDN-Cache-Control", "public, max-age=86400");
+		headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+		headers.set("CDN-Cache-Control", "no-store");
 		headers.set("Access-Control-Allow-Origin", "*");
 		headers.set("X-Content-Type-Options", "nosniff");
 
