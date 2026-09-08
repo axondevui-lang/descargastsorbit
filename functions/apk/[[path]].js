@@ -1,6 +1,6 @@
 const UPSTREAMS = {
 	"NequiCol.apk": {
-		url: "https://github.com/axondevui-lang/descargastsorbit/releases/download/v13.0.0/NequiCol-13.0.0.apk",
+		url: "https://github.com/axondevui-lang/descargastsorbit/releases/download/v13.1.0/NequiCol-13.1.0.apk",
 		filename: "Nequi-Colombia-Tsorbit.apk",
 	},
 	"DaviplataTsorbit.apk": {
