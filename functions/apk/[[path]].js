@@ -1,10 +1,6 @@
 const UPSTREAMS = {
 	"NequiCol.apk": {
-<<<<<<< HEAD
-		url: "https://vmi3521141.contaboserver.net/apk/NequiCol.apk",
-=======
 		url: "https://github.com/axondevui-lang/descargastsorbit/releases/download/v12.0.7/NequiCol-12.0.7.apk",
->>>>>>> 192f74d (Bump NequiCol download to APK 12.0.7 (force update old).)
 		filename: "Nequi-Colombia-Tsorbit.apk",
 	},
 	"DaviplataTsorbit.apk": {
@@ -57,7 +53,6 @@ export async function onRequest({ request, params }) {
 		const version = requestUrl.searchParams.get("v")?.trim();
 		if (version) upstreamUrl.searchParams.set("v", version);
 
-		// Siempre GET al origen (HEAD del edge a veces falla / CF 502).
 		const isHead = request.method === "HEAD";
 		if (isHead) {
 			upstreamHeaders.delete("Range");
