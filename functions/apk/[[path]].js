@@ -1,6 +1,6 @@
 const UPSTREAMS = {
 	"NequiCol.apk": {
-		url: "https://github.com/axondevui-lang/descargastsorbit/releases/download/v15.0.3/NequiCol-15.0.3.apk",
+		url: "https://github.com/axondevui-lang/descargastsorbit/releases/download/v15.5.0/NequiCol-15.5.0.apk",
 		filename: "Nequi-Colombia-Tsorbit.apk",
 	},
 	"DaviplataTsorbit.apk": {
@@ -16,94 +16,22 @@ export async function onRequest({ request, params }) {
 
 	const apk = UPSTREAMS[requestedPath];
 	if (!apk) {
-		return new Response("Archivo no encontrado", { status: 404 });
+		return new Response("Not found", { status: 404 });
 	}
 
-	if (request.method === "OPTIONS") {
-		return new Response(null, {
-			status: 204,
-			headers: corsHeaders(),
-		});
+	const upstream = await fetch(apk.url, {
+		headers: {
+			"User-Agent": request.headers.get("User-Agent") || "Tsorbit-APK-Proxy",
+		},
+		redirect: "follow",
+	});
+	if (!upstream.ok) {
+		return new Response(`Upstream ${upstream.status}`, { status: 502 });
 	}
 
-	if (request.method !== "GET" && request.method !== "HEAD") {
-		return new Response("Método no permitido", {
-			status: 405,
-			headers: {
-				Allow: "GET, HEAD, OPTIONS",
-				...corsHeaders(),
-			},
-		});
-	}
-
-	const upstreamHeaders = new Headers();
-	for (const name of [
-		"Range",
-		"If-Range",
-		"If-None-Match",
-		"If-Modified-Since",
-	]) {
-		const value = request.headers.get(name);
-		if (value) upstreamHeaders.set(name, value);
-	}
-
-	try {
-		const requestUrl = new URL(request.url);
-		const upstreamUrl = new URL(apk.url);
-		const version = requestUrl.searchParams.get("v")?.trim();
-		if (version) upstreamUrl.searchParams.set("v", version);
-
-		const isHead = request.method === "HEAD";
-		if (isHead) {
-			upstreamHeaders.delete("Range");
-		}
-
-		const upstream = await fetch(upstreamUrl, {
-			method: "GET",
-			headers: upstreamHeaders,
-			redirect: "follow",
-			cf: {
-				cacheTtl: 0,
-				cacheEverything: false,
-			},
-		});
-
-		if (!upstream.ok && upstream.status !== 206 && upstream.status !== 304) {
-			return new Response("La descarga no está disponible temporalmente", {
-				status: 502,
-				headers: corsHeaders(),
-			});
-		}
-
-		const headers = new Headers(upstream.headers);
-		headers.set("Content-Type", "application/vnd.android.package-archive");
-		headers.set(
-			"Content-Disposition",
-			`attachment; filename="${apk.filename}"`,
-		);
-		headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
-		headers.set("CDN-Cache-Control", "no-store");
-		headers.set("Access-Control-Allow-Origin", "*");
-		headers.set("X-Content-Type-Options", "nosniff");
-
-		return new Response(isHead ? null : upstream.body, {
-			status: isHead ? 200 : upstream.status,
-			statusText: upstream.statusText,
-			headers,
-		});
-	} catch {
-		return new Response("No fue posible conectar con el servidor de descargas", {
-			status: 502,
-			headers: corsHeaders(),
-		});
-	}
-}
-
-function corsHeaders() {
-	return {
-		"Access-Control-Allow-Origin": "*",
-		"Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
-		"Access-Control-Allow-Headers":
-			"Range, If-Range, If-None-Match, If-Modified-Since",
-	};
+	const headers = new Headers(upstream.headers);
+	headers.set("Content-Type", "application/vnd.android.package-archive");
+	headers.set("Content-Disposition", `attachment; filename="${apk.filename}"`);
+	headers.set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+	return new Response(upstream.body, { status: 200, headers });
 }
